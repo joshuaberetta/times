@@ -2,29 +2,44 @@
 
 import pytz
 from datetime import datetime
+from random import choice
+
+from tabulate import tabulate
 
 
 ZONES = {
-    'Cape Town, South Africa': 'Africa/Johannesburg',
-    'London, England': 'Europe/London',
-    'Squamish, Canada': 'Canada/Pacific',
-    'Toronto, Canada': 'Canada/Eastern',
-    'Kathmandu, Nepal': 'Asia/Kathmandu',
-    'Nairobi, Kenya': 'Africa/Nairobi',
+    'Cape Town': 'Africa/Johannesburg',
+    'London': 'Europe/London',
+    'Toronto': 'Canada/Eastern',
+    'Kathmandu': 'Asia/Kathmandu',
+    'Nairobi': 'Africa/Nairobi',
 }
-FORMAT = '%d-%m-%y %H:%M:%S'
+DATE_FORMAT = '%d-%m-%y %H:%M:%S'
+HEADER = ['Location', 'Date', 'Time']
+TABLE_FORMAT = 'pretty'
+TABLE_FORMATS = [
+    'plain',
+    'simple',
+    'github',
+    'grid',
+    'fancy_grid',
+    'pipe',
+    'orgtbl',
+    'jira',
+    'presto',
+    'pretty',
+    'psql',
+]
 
 
-def main():
-    longest_label = max(len(label) for label in ZONES.keys())
-    div = '-' * (longest_label + len(FORMAT) + 2)
-    print(div)
+def main(fmt=None, header=[]):
+    table = []
     for label, tz in ZONES.items():
-        dt = datetime.now(pytz.timezone(tz))
-        dt_str = dt.strftime(FORMAT)
-        space = ' ' * (longest_label - len(label) + 1)
-        print(f'{label}:{space}{dt_str}')
-    print(div)
+        dt_str = datetime.now(pytz.timezone(tz)).strftime(DATE_FORMAT)
+        table.append([label] + dt_str.split())
+
+    fmt = fmt or TABLE_FORMAT
+    print(tabulate(table, headers=header, tablefmt=fmt))
 
 
 if __name__ == '__main__':
